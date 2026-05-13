@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>nuri. Recipe Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet" />
+<script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --cream: #FAF6F0; --warm-beige: #F0E8DC; --border: #E4D9CC;
+  --brown: #5C3D2E; --tan: #C4A882;
+  --green-dark: #3A6B4A; --rose: #C47A7A;
+  --sage: #7A9E7E;
+  --text: #2C1810; --text-mid: #6B4D3C; --text-light: #9C7B6A;
+  --white: #FFFFFF;
+  --shadow: 0 2px 12px rgba(44,24,16,0.08);
+  --shadow-md: 0 4px 24px rgba(44,24,16,0.12);
+  --radius: 14px; --radius-sm: 8px;
+  --font-serif: 'Playfair Display', Georgia, serif;
+  --font-logo: 'Cormorant Garamond', Georgia, serif;
+  --font-body: 'DM Sans', system-ui, sans-serif;
+}
+html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+body { background: var(--cream); color: var(--text); font-family: var(--font-body); min-height: 100vh; }
+#root { min-height: 100vh; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect } = React;
+
+const APPROVED_RDS = [
+  { email: 'claire@cpnutrition.com', password: 'claire2025', name: 'Claire Pettitt', id: 3, credentials: 'PhD, RD', avatarColor: '#7A9E7E' },
+  { email: 'alysse@nuri.com',        password: 'alysse2025', name: 'Alysse Vocca',  id: 4, credentials: 'RD', avatarColor: '#C47A7A' },
+];
+
+const HEALTH_LABELS = [
+  { id: 'pcos', label: 'PCOS' },
+  { id: 'endometriosis', label: 'Endometriosis' },
+  { id: 'hormones', label: 'Hormones' },
+  { id: 'fertility', label: 'Fertility' },
+  { id: 'gut', label: 'Gut Health' },
+  { id: 'thyroid', label: 'Thyroid' },
+  { id: 'period', label: 'Period Health' },
+  { id: 'energy', label: 'Energy' },
+  { id: 'postpartum', label: 'Postpartum' },
+  { id: 'menopause', label: 'Menopause' },
+  { id: 'anti-inflammatory', label: 'Anti-Inflammatory' },
+  { id: 'high-protein', label: 'High Protein' },
+];
+
+const GINGHAM_COLORS = [
+  { label: 'Sage',  bg: '#A8C4A8', s: 'rgba(58,107,74,0.32)' },
+  { label: 'Rose',  bg: '#D9A0A0', s: 'rgba(160,60,60,0.30)' },
+  { label: 'Tan',   bg: '#D4B87A', s: 'rgba(140,95,20,0.34)' },
+  { label: 'Clay',  bg: '#C8A080', s: 'rgba(140,80,30,0.32)' },
+  { label: 'Plum',  bg: '#BBA8CC', s: 'rgba(90,50,130,0.28)' },
+  { label: 'Wheat', bg: '#EDD9A3', s: 'rgba(140,95,20,0.28)' },
+  { label: 'Blush', bg: '#EDCACA', s: 'rgba(155,52,68,0.30)' },
+  { label: 'Sky',   bg: '#B6CAE0', s: 'rgba(20,48,108,0.26)' },
+];
+
+const EMOJIS = ['🥗','🍲','🥣','🍳','🥘','🫐','🍞','🥙','🌮','🍜','🥬','🐟','🍛','🫙','🧆','🍵','🥤','🍫','⚡','💜','✨','🌿','🍋','🥑','🎃','🥕','🥞','🍆','🥚','🔴','🍰','🌶️','🍂','🥭','🥜','🌈','🍝'];
+
+function Logo() {
+  return (
+    <span style={{fontFamily:'var(--font-logo)',fontSize:24,fontStyle:'italic',fontWeight:600,color:'var(--green-dark)',display:'inline-flex',alignItems:'flex-end',lineHeight:1}}>
+      nuri<span style={{display:'inline-block',width:7,height:7,borderRadius:'50%',background:'var(--rose)',marginLeft:2,marginBottom:2,flexShrink:0}}/>
+    </span>
+  );
+}
+
+function Login({ onLogin }) {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+
+  const handleLogin = () => {
+    const match = APPROVED_RDS.find(r => r.email.toLowerCase() === email.trim().toLowerCase() && r.password === password.trim());
+    if (match) { onLogin(match); }
+    else { setError('Incorrect email or password.'); setPassword(''); }
+  };
+
+  return (
+    <div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',background:'var(--cream)',padding:20}}>
+      <div style={{background:'var(--white)',borderRadius:20,padding:48,width:'100%',maxWidth:420,boxShadow:'var(--shadow-md)',textAlign:'center'}}>
+        <div style={{fontSize:40,marginBottom:16}}>🌿</div>
+        <Logo />
+        <div style={{fontFamily:'var(--font-body)',fontSize:11,fontWeight:300,letterSpacing:'0.1em',textTransform:'uppercase',color:'var(--tan)',marginTop:6,marginBottom:32}}>Recipe Studio</div>
+        <div style={{display:'flex',flexDirection:'column',gap:12,textAlign:'left'}}>
+          <div>
+            <label style={{fontSize:11,fontWeight:600,color:'var(--text-mid)',letterSpacing:'0.06em',textTransform:'uppercase',display:'block',marginBottom:6}}>Email</label>
+            <input type="email" value={email} onChange={e=>{setEmail(e.target.value);setError('');}} onKeyDown={e=>e.key==='Enter'&&handleLogin()} placeholder="your@email.com"
+              style={{width:'100%',padding:'12px 16px',border:`1.5px solid ${error?'#C0392B':'var(--border)'}`,borderRadius:8,fontFamily:'var(--font-body)',fontSize:14,color:'var(--text)',outline:'none',background:'var(--cream)'}}/>
+          </div>
+          <div>
+            <label style={{fontSize:11,fontWeight:600,color:'var(--text-mid)',letterSpacing:'0.06em',textTransform:'uppercase',display:'block',marginBottom:6}}>Password</label>
+            <input type="password" value={password} onChange={e=>{setPassword(e.target.value);setError('');}} onKeyDown={e=>e.key==='Enter'&&handleLogin()} placeholder="••••••••"
+              style={{width:'100%',padding:'12px 16px',border:`1.5px solid ${error?'#C0392B':'var(--border)'}`,borderRadius:8,fontFamily:'var(--font-body)',fontSize:14,color:'var(--text)',outline:'none',background:'var(--cream)'}}/>
+          </div>
+          {error && <div style={{color:'#C0392B',fontSize:13}}>{error}</div>}
+          <button onClick={handleLogin}
+            style={{width:'100%',padding:14,background:'var(--brown)',color:'white',border:'none',borderRadius:50,fontFamily:'var(--font-body)',fontSize:15,fontWeight:600,cursor:'pointer',marginTop:8}}>
+            Enter Studio →
+          </button>
+        </div>
+        <p style={{fontSize:12,color:'var(--text-light)',marginTop:16,lineHeight:1.5}}>For approved nuri. dietitians only.</p>
+      </div>
+    </div>
+  );
+}
+
+// ── NAV ──────────────────────────────────────────────────────
+function Nav({ rd, onLogout, onNavigate }) {
+  return (
+    <nav style={{position:'sticky',top:0,zIndex:100,background:'rgba(250,246,240,0.97)',backdropFilter:'blur(16px)',borderBottom:'1px solid var(--border)',padding:'0 32px',height:64,display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+      <div style={{display:'flex',alignItems:'center',gap:12}}>
+        <span onClick={()=>onNavigate('home')} style={{cursor:'pointer'}}><Logo /></span>
+        <span style={{width:1,height:20,background:'var(--border)',display:'inline-block'}}/>
+        <span style={{fontFamily:'var(--font-body)',fontSize:11,fontWeight:300,letterSpacing:'0.1em',textTransform:'uppercase',color:'var(--tan)'}}>Recipe Studio</span>
+      </div>
+      <div style={{display:'flex',alignItems:'center',gap:16}}>
+        <span style={{fontSize:13,color:'var(--text-light)'}}>{rd.name}</span>
+        <button onClick={()=>onNavigate('add')}
+          style={{padding:'9px 20px',borderRadius:50,background:'var(--brown)',color:'white',border:'none',fontFamily:'var(--font-body)',fontSize:13,fontWeight:600,cursor:'pointer'}}>
+          + Create Recipe
+        </button>
+        <button onClick={onLogout}
+          style={{padding:'8px 18px',borderRadius:50,border:'1.5px solid var(--border)',background:'transparent',fontFamily:'var(--font-body)',fontSize:13,fontWeight:500,color:'var(--text-mid)',cursor:'pointer'}}>
+          Sign out
+        </button>
+      </div>
+    </nav>
+  );
+}
+
+// ── DASHBOARD ────────────────────────────────────────────────
+function Dashboard({ rd, recipes, onNavigate, onEdit, onDelete }) {
+  const totalSaves   = recipes.reduce((a,r) => a + (r.saves||0), 0);
+  const totalLikes   = recipes.reduce((a,r) => a + (r.likes||0), 0);
+  const totalShares  = recipes.reduce((a,r) => a + (r.shares||0), 0);
+
+  // Most consumed category
+  const labelCounts = {};
+  recipes.forEach(r => (r.healthLabels||[]).forEach(l => { labelCounts[l] = (labelCounts[l]||0) + 1; }));
+  const topLabel = Object.entries(labelCounts).sort((a,b)=>b[1]-a[1])[0];
+  const topLabelName = topLabel ? HEALTH_LABELS.find(h=>h.id===topLabel[0])?.label : '—';
+
+  const statCard = (num, label, icon) => (
+    <div style={{background:'var(--white)',borderRadius:12,padding:'20px 24px',boxShadow:'var(--shadow)',flex:1,minWidth:120}}>
+      <div style={{fontSize:24,marginBottom:4}}>{icon}</div>
+      <div style={{fontFamily:'var(--font-serif)',fontSize:28,fontWeight:600,color:'var(--text)'}}>{num}</div>
+      <div style={{fontSize:12,color:'var(--text-light)',marginTop:2}}>{label}</div>
+    </div>
+  );
+
+  return (
+    <div style={{maxWidth:960,margin:'0 auto',padding:'40px 24px 80px'}}>
+
+      {/* Header */}
+      <div style={{marginBottom:36}}>
+        <div style={{fontFamily:'var(--font-body)',fontSize:11,fontWeight:300,letterSpacing:'0.1em',textTransform:'uppercase',color:'var(--tan)',marginBottom:6}}>welcome back</div>
+        <h1 style={{fontFamily:'var(--font-serif)',fontSize:36,fontStyle:'italic',fontWeight:600,color:'var(--text)',marginBottom:6}}>
+          {rd.name.split(' ')[0]}'s Dashboard
+        </h1>
+        <p style={{color:'var(--text-light)',fontSize:14}}>Here's how your recipes are performing on nuri.</p>
+      </div>
+
+      {/* Stats */}
+      <div style={{display:'flex',gap:16,marginBottom:32,flexWrap:'wrap'}}>
+        {statCard(recipes.length, 'Recipes', '📋')}
+        {statCard(totalSaves, 'Total Saves', '❤️')}
+        {statCard(totalLikes, 'Total Likes', '👍')}
+        {statCard(totalShares, 'Total Shares', '↗️')}
+        {statCard(topLabelName, 'Top Category', '🏷️')}
+      </div>
+
+      {/* CTA */}
+      <div style={{background:`linear-gradient(135deg, ${rd.avatarColor}33, ${rd.avatarColor}11)`,borderRadius:16,padding:'28px 32px',marginBottom:32,display:'flex',alignItems:'center',justifyContent:'space-between',gap:16,flexWrap:'wrap'}}>
+        <div>
+          <div style={{fontFamily:'var(--font-serif)',fontSize:22,fontStyle:'italic',fontWeight:600,color:'var(--text)',marginBottom:4}}>Ready to add a new recipe?</div>
+          <div style={{fontSize:14,color:'var(--text-mid)'}}>Your recipes help women manage their health through food.</div>
+        </div>
+        <button onClick={()=>onNavigate('add')}
+          style={{padding:'13px 28px',background:'var(--brown)',color:'white',border:'none',borderRadius:50,fontFamily:'var(--font-body)',fontSize:14,fontWeight:600,cursor:'pointer',flexShrink:0}}>
+          + Create Recipe
+        </button>
+      </div>
+
+      {/* Recipe list */}
+      <div style={{marginBottom:16,display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+        <h2 style={{fontFamily:'var(--font-serif)',fontSize:22,fontStyle:'italic',fontWeight:600,color:'var(--text)'}}>Your Recipes</h2>
+        <span style={{fontSize:13,color:'var(--text-light)'}}>{recipes.length} recipe{recipes.length!==1?'s':''}</span>
+      </div>
+
+      {recipes.length === 0 ? (
+        <div style={{textAlign:'center',padding:'60px 40px',background:'var(--white)',borderRadius:14,boxShadow:'var(--shadow)'}}>
+          <div style={{fontSize:48,marginBottom:16}}>🌱</div>
+          <div style={{fontFamily:'var(--font-serif)',fontSize:22,fontStyle:'italic',marginBottom:8,color:'var(--text)'}}>No recipes yet</div>
+          <div style={{fontSize:14,color:'var(--text-light)',marginBottom:24}}>Create your first recipe to get started.</div>
+          <button onClick={()=>onNavigate('add')}
+            style={{padding:'12px 28px',background:'var(--brown)',color:'white',border:'none',borderRadius:50,fontFamily:'var(--font-body)',fontSize:14,fontWeight:600,cursor:'pointer'}}>
+            + Create Recipe
+          </button>
+        </div>
+      ) : (
+        <div style={{display:'flex',flexDirection:'column',gap:12}}>
+          {recipes.map(r => (
+            <div key={r.id} style={{background:'var(--white)',borderRadius:12,padding:'18px 20px',display:'flex',alignItems:'center',gap:16,boxShadow:'var(--shadow)'}}>
+              <div style={{fontSize:28,flexShrink:0}}>{r.emoji||'🥗'}</div>
+              <div style={{flex:1,minWidth:0}}>
+                <div style={{fontFamily:'var(--font-serif)',fontSize:17,fontStyle:'italic',fontWeight:600,color:'var(--text)'}}>{r.title}</div>
+                <div style={{fontSize:12,color:'var(--text-light)',marginTop:3}}>{r.prepTime||'—'} prep · {r.servings||'—'} servings</div>
+                <div style={{display:'flex',gap:6,flexWrap:'wrap',marginTop:6}}>
+                  {(r.healthLabels||[]).map(l => {
+                    const lbl = HEALTH_LABELS.find(h=>h.id===l);
+                    return lbl ? <span key={l} style={{padding:'2px 10px',borderRadius:50,fontSize:11,fontWeight:500,background:'var(--warm-beige)',color:'var(--text-mid)'}}>{lbl.label}</span> : null;
+                  })}
+                </div>
+              </div>
+              {/* Engagement */}
+              <div style={{display:'flex',gap:16,fontSize:12,color:'var(--text-light)',flexShrink:0}}>
+                <span>❤️ {r.saves||0}</span>
+                <span>👍 {r.likes||0}</span>
+                <span>↗️ {r.shares||0}</span>
+              </div>
+              <button onClick={()=>onEdit(r)}
+                style={{padding:'7px 14px',border:'1.5px solid var(--tan)',borderRadius:50,background:'white',color:'var(--tan)',fontSize:12,fontWeight:500,cursor:'pointer',fontFamily:'var(--font-body)',flexShrink:0}}>
+                Edit
+              </button>
+              <button onClick={()=>onDelete(r.id)}
+                style={{padding:'7px 14px',border:'1.5px solid var(--border)',borderRadius:50,background:'white',color:'var(--text-light)',fontSize:12,fontWeight:500,cursor:'pointer',fontFamily:'var(--font-body)',flexShrink:0}}>
+                Delete
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── RECIPE FORM ───────────────────────────────────────────────
+function RecipeForm({ rd, initial, onSave, onCancel }) {
+  const empty = { title:'', subtitle:'', emoji:'🥗', healthLabels:['pcos'], prepTime:'', cookTime:'', servings:'', ginghamBg:GINGHAM_COLORS[0].bg, ginghamS:GINGHAM_COLORS[0].s, photoUrl:'', ingredients:[''], instructions:[''], note:'' };
+  const [form, setForm] = useState(initial || empty);
+
+  const upd = (k,v) => setForm(f=>({...f,[k]:v}));
+  const toggleLabel = id => upd('healthLabels', form.healthLabels.includes(id) ? form.healthLabels.filter(l=>l!==id) : [...form.healthLabels,id]);
+  const updList = (k,i,v) => { const n=[...form[k]]; n[i]=v; upd(k,n); };
+  const addItem = k => upd(k,[...form[k],'']);
+  const removeItem = (k,i) => upd(k,form[k].filter((_,idx)=>idx!==i));
+
+  const inp = (extra={}) => ({padding:'10px 14px',border:'1.5px solid var(--border)',borderRadius:8,background:'var(--white)',fontFamily:'var(--font-body)',fontSize:14,color:'var(--text)',outline:'none',width:'100%',...extra});
+  const lbl = {fontSize:11,fontWeight:600,color:'var(--text-mid)',letterSpacing:'0.06em',textTransform:'uppercase',display:'block',marginBottom:6};
+  const sec = {marginBottom:32};
+  const secTitle = {fontFamily:'var(--font-serif)',fontSize:18,fontWeight:600,color:'var(--text)',marginBottom:16,paddingBottom:10,borderBottom:'1px solid var(--border)'};
+
+  return (
+    <div style={{maxWidth:900,margin:'0 auto',padding:'40px 24px 80px'}}>
+      <div style={{display:'flex',alignItems:'center',gap:16,marginBottom:32}}>
+        <button onClick={onCancel} style={{padding:'8px 16px',borderRadius:50,border:'1.5px solid var(--border)',background:'transparent',fontFamily:'var(--font-body)',fontSize:13,cursor:'pointer',color:'var(--text-mid)'}}>← Back</button>
+        <h1 style={{fontFamily:'var(--font-serif)',fontSize:32,fontStyle:'italic',fontWeight:600,color:'var(--text)'}}>{initial ? 'Edit Recipe' : 'Create Recipe'}</h1>
+      </div>
+
+      <div style={{background:'var(--white)',borderRadius:14,padding:32,boxShadow:'var(--shadow)'}}>
+
+        <div style={sec}>
+          <div style={secTitle}>🥗 Recipe Details</div>
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:14}}>
+            <div style={{gridColumn:'1/-1'}}>
+              <label style={lbl}>Title *</label>
+              <input style={inp()} value={form.title} onChange={e=>upd('title',e.target.value)} placeholder="e.g. PCOS Berry Hormone Bowl" />
+            </div>
+            <div style={{gridColumn:'1/-1'}}>
+              <label style={lbl}>Subtitle</label>
+              <input style={inp()} value={form.subtitle} onChange={e=>upd('subtitle',e.target.value)} placeholder="e.g. Inositol-rich & anti-androgenic" />
+            </div>
+            <div><label style={lbl}>Prep Time</label><input style={inp()} value={form.prepTime} onChange={e=>upd('prepTime',e.target.value)} placeholder="e.g. 10 min" /></div>
+            <div><label style={lbl}>Cook Time</label><input style={inp()} value={form.cookTime} onChange={e=>upd('cookTime',e.target.value)} placeholder="e.g. 25 min" /></div>
+            <div><label style={lbl}>Servings</label><input style={inp()} value={form.servings} onChange={e=>upd('servings',e.target.value)} placeholder="e.g. 4" /></div>
+          </div>
+        </div>
+
+        <div style={sec}>
+          <div style={secTitle}>🏷️ Health Conditions</div>
+          <div style={{display:'flex',flexWrap:'wrap',gap:8}}>
+            {HEALTH_LABELS.map(l => (
+              <button key={l.id} onClick={()=>toggleLabel(l.id)}
+                style={{padding:'7px 14px',borderRadius:50,border:`1.5px solid ${form.healthLabels.includes(l.id)?'var(--brown)':'var(--border)'}`,background:form.healthLabels.includes(l.id)?'var(--warm-beige)':'var(--white)',color:form.healthLabels.includes(l.id)?'var(--brown)':'var(--text-mid)',fontSize:12,fontWeight:form.healthLabels.includes(l.id)?600:500,cursor:'pointer',fontFamily:'var(--font-body)'}}>
+                {l.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div style={sec}>
+          <div style={secTitle}>🎨 Card Style</div>
+          <label style={{...lbl,marginBottom:10}}>Emoji</label>
+          <div style={{display:'flex',flexWrap:'wrap',gap:8,marginBottom:20}}>
+            {EMOJIS.map(e => (
+              <button key={e} onClick={()=>upd('emoji',e)}
+                style={{width:44,height:44,borderRadius:10,border:`2px solid ${form.emoji===e?'var(--brown)':'var(--border)'}`,background:form.emoji===e?'var(--warm-beige)':'var(--white)',fontSize:22,cursor:'pointer'}}>
+                {e}
+              </button>
+            ))}
+          </div>
+          <label style={{...lbl,marginBottom:10}}>Background</label>
+          <div style={{display:'flex',flexWrap:'wrap',gap:10}}>
+            {GINGHAM_COLORS.map(g => {
+              const sz=8;
+              const gs={backgroundColor:g.bg,backgroundImage:[`repeating-linear-gradient(transparent 0px,transparent ${sz}px,${g.s} ${sz}px,${g.s} ${sz*2}px)`,`repeating-linear-gradient(90deg,transparent 0px,transparent ${sz}px,${g.s} ${sz}px,${g.s} ${sz*2}px)`].join(',')};
+              return <div key={g.label} onClick={()=>{upd('ginghamBg',g.bg);upd('ginghamS',g.s);}}
+                style={{width:48,height:36,borderRadius:8,cursor:'pointer',border:`3px solid ${form.ginghamBg===g.bg?'var(--brown)':'transparent'}`,transition:'all 0.15s',...gs}} title={g.label}/>;
+            })}
+          </div>
+        </div>
+
+        <div style={sec}>
+          <div style={secTitle}>📸 Photo URL</div>
+          <label style={lbl}>Image URL (optional)</label>
+          <input style={inp()} value={form.photoUrl} onChange={e=>upd('photoUrl',e.target.value)} placeholder="https://..." />
+          {form.photoUrl && <img src={form.photoUrl} alt="preview" style={{width:'100%',height:160,objectFit:'cover',borderRadius:8,marginTop:10}} onError={e=>e.target.style.display='none'} />}
+        </div>
+
+        <div style={sec}>
+          <div style={secTitle}>🧾 Ingredients</div>
+          {form.ingredients.map((ing,i) => (
+            <div key={i} style={{display:'flex',gap:8,marginBottom:8,alignItems:'center'}}>
+              <div style={{width:6,height:6,borderRadius:'50%',background:'var(--tan)',flexShrink:0}}/>
+              <input style={inp()} value={ing} onChange={e=>updList('ingredients',i,e.target.value)} placeholder={`Ingredient ${i+1}`} />
+              {form.ingredients.length>1 && <button onClick={()=>removeItem('ingredients',i)} style={{width:28,height:28,borderRadius:'50%',border:'1.5px solid var(--border)',background:'white',cursor:'pointer',color:'var(--text-light)',fontSize:14,flexShrink:0}}>×</button>}
+            </div>
+          ))}
+          <button onClick={()=>addItem('ingredients')} style={{display:'flex',alignItems:'center',gap:8,padding:'8px 14px',background:'var(--warm-beige)',border:'1.5px dashed var(--border)',borderRadius:8,fontSize:13,color:'var(--text-mid)',cursor:'pointer',fontFamily:'var(--font-body)',width:'100%',marginTop:4}}>+ Add ingredient</button>
+        </div>
+
+        <div style={sec}>
+          <div style={secTitle}>📋 Instructions</div>
+          {form.instructions.map((step,i) => (
+            <div key={i} style={{display:'flex',gap:8,marginBottom:8,alignItems:'flex-start'}}>
+              <div style={{width:24,height:24,borderRadius:'50%',background:'var(--warm-beige)',border:'1px solid var(--border)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:11,fontWeight:700,color:'var(--brown)',flexShrink:0,marginTop:8}}>{i+1}</div>
+              <textarea value={step} onChange={e=>updList('instructions',i,e.target.value)} placeholder={`Step ${i+1}`} style={{...inp(),minHeight:60,resize:'vertical',lineHeight:1.5}} />
+              {form.instructions.length>1 && <button onClick={()=>removeItem('instructions',i)} style={{width:28,height:28,borderRadius:'50%',border:'1.5px solid var(--border)',background:'white',cursor:'pointer',color:'var(--text-light)',fontSize:14,flexShrink:0,marginTop:8}}>×</button>}
+            </div>
+          ))}
+          <button onClick={()=>addItem('instructions')} style={{display:'flex',alignItems:'center',gap:8,padding:'8px 14px',background:'var(--warm-beige)',border:'1.5px dashed var(--border)',borderRadius:8,fontSize:13,color:'var(--text-mid)',cursor:'pointer',fontFamily:'var(--font-body)',width:'100%',marginTop:4}}>+ Add step</button>
+        </div>
+
+        <div style={sec}>
+          <div style={secTitle}>💡 Dietitian's Note</div>
+          <textarea value={form.note} onChange={e=>upd('note',e.target.value)} placeholder="Add a nutritional note or tip..." style={{...inp(),minHeight:80,resize:'vertical',lineHeight:1.5}} />
+        </div>
+
+        <div style={{display:'flex',gap:12,justifyContent:'flex-end',paddingTop:24,borderTop:'1px solid var(--border)'}}>
+          <button onClick={onCancel} style={{padding:'13px 24px',background:'transparent',border:'1.5px solid var(--border)',color:'var(--text-mid)',borderRadius:50,fontFamily:'var(--font-body)',fontSize:14,cursor:'pointer'}}>Cancel</button>
+          <button onClick={()=>onSave(form)} style={{padding:'13px 36px',background:'var(--brown)',color:'white',border:'none',borderRadius:50,fontFamily:'var(--font-body)',fontSize:15,fontWeight:600,cursor:'pointer'}}>
+            {initial ? 'Save changes ✓' : 'Add to app ✓'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── MAIN STUDIO ───────────────────────────────────────────────
+function Studio({ rd, onLogout }) {
+  const [screen, setScreen] = useState('home');
+  const [editing, setEditing] = useState(null);
+  const [toast, setToast] = useState('');
+  const [recipes, setRecipes] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('nuri_custom_recipes')||'[]').filter(r=>r.dieticianId===rd.id); } catch { return []; }
+  });
+
+  function saveToStorage(updated) {
+    try {
+      const all = JSON.parse(localStorage.getItem('nuri_custom_recipes')||'[]').filter(r=>r.dieticianId!==rd.id);
+      localStorage.setItem('nuri_custom_recipes', JSON.stringify([...all,...updated]));
+    } catch {}
+  }
+
+  function showToast(msg) { setToast(msg); setTimeout(()=>setToast(''),3000); }
+
+  function handleSave(form) {
+    if (!form.title.trim()) { alert('Please add a recipe title.'); return; }
+    if (!form.healthLabels.length) { alert('Please select at least one health condition.'); return; }
+    let updated;
+    if (editing) {
+      updated = recipes.map(r => r.id===editing.id ? {...form,id:editing.id,dieticianId:rd.id} : r);
+      showToast('Recipe updated ✓');
+    } else {
+      updated = [...recipes, {...form,id:Date.now(),dieticianId:rd.id,saves:0,likes:0,shares:0}];
+      showToast('Recipe added ✓');
+    }
+    setRecipes(updated);
+    saveToStorage(updated);
+    setEditing(null);
+    setScreen('home');
+  }
+
+  function handleEdit(r) { setEditing(r); setScreen('add'); }
+
+  function handleDelete(id) {
+    if (!confirm('Delete this recipe?')) return;
+    const updated = recipes.filter(r=>r.id!==id);
+    setRecipes(updated);
+    saveToStorage(updated);
+  }
+
+  function navigate(s) { if(s==='add') setEditing(null); setScreen(s); window.scrollTo(0,0); }
+
+  return (
+    <div style={{minHeight:'100vh',background:'var(--cream)'}}>
+      <Nav rd={rd} onLogout={onLogout} onNavigate={navigate} />
+      {screen==='home' && <Dashboard rd={rd} recipes={recipes} onNavigate={navigate} onEdit={handleEdit} onDelete={handleDelete} />}
+      {screen==='add' && <RecipeForm rd={rd} initial={editing} onSave={handleSave} onCancel={()=>navigate('home')} />}
+      {toast && (
+        <div style={{position:'fixed',bottom:32,right:32,background:'var(--green-dark)',color:'white',padding:'14px 24px',borderRadius:50,fontSize:14,fontWeight:500,boxShadow:'var(--shadow-md)',zIndex:999}}>
+          {toast}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function App() {
+  const [rd, setRd] = useState(null);
+  return rd ? <Studio rd={rd} onLogout={()=>setRd(null)} /> : <Login onLogin={setRd} />;
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>

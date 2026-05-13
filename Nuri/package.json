@@ -1,0 +1,21 @@
+{
+  "name": "nuri-recipes",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Nuri Recipes — marketplace for RD-led recipe subscriptions.",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "dev": "vercel dev",
+    "stripe:listen": "stripe listen --forward-to localhost:3000/api/stripe/webhook"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.45.0",
+    "micro": "^10.0.1",
+    "stripe": "^16.12.0"
+  },
+  "devDependencies": {
+    "vercel": "^37.6.0"
+  }
+}

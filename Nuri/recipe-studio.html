@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>nuri. Admin Recipe Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet" />
+<script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --cream: #FAF6F0; --warm-beige: #F0E8DC; --border: #E4D9CC;
+  --brown: #5C3D2E; --tan: #C4A882;
+  --green-dark: #3A6B4A; --rose: #C47A7A;
+  --sage: #7A9E7E; --clay: #B8845A;
+  --text: #2C1810; --text-mid: #6B4D3C; --text-light: #9C7B6A;
+  --white: #FFFFFF;
+  --shadow: 0 2px 12px rgba(44,24,16,0.08);
+  --shadow-md: 0 4px 24px rgba(44,24,16,0.13);
+  --shadow-lg: 0 12px 48px rgba(44,24,16,0.18);
+  --radius: 14px; --radius-sm: 8px;
+  --font-logo: 'Cormorant Garamond', Georgia, serif;
+  --font-serif: 'Playfair Display', Georgia, serif;
+  --font-body: 'DM Sans', system-ui, sans-serif;
+}
+html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+body { background: var(--cream); color: var(--text); font-family: var(--font-body); min-height: 100vh; }
+#root { min-height: 100vh; }
+
+/* ── TOP BAR ── */
+.studio-bar {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(250,246,240,0.97); backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 32px; height: 64px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.studio-bar-brand { display: flex; align-items: center; gap: 12px; }
+.studio-bar-logo { font-family: var(--font-logo); font-size: 24px; font-style: italic; font-weight: 600; color: var(--green-dark); display: inline-flex; align-items: flex-end; }
+.studio-bar-logo-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--rose); margin-left: 2px; margin-bottom: 2px; }
+.studio-bar-divider { width: 1px; height: 20px; background: var(--border); }
+.studio-bar-title { font-family: var(--font-body); font-size: 11px; font-weight: 300; letter-spacing: 0.1em; text-transform: uppercase; color: var(--tan); }
+.studio-bar-right { display: flex; align-items: center; gap: 12px; }
+.bar-user { font-size: 13px; color: var(--text-light); }
+.bar-btn { padding: 9px 20px; border-radius: 50px; font-family: var(--font-body); font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.18s; border: none; }
+.bar-btn-ghost { background: transparent; border: 1.5px solid var(--border); color: var(--text-mid); }
+.bar-btn-ghost:hover { border-color: var(--brown); color: var(--brown); }
+.bar-btn-primary { background: var(--brown); color: white; }
+.bar-btn-primary:hover { background: #4A3024; transform: translateY(-1px); }
+.bar-btn-primary:disabled { opacity: 0.45; cursor: default; transform: none; }
+
+/* ── SIGN IN ── */
+.signin-page {
+  min-height: 100vh; display: grid; grid-template-columns: 1fr 1fr; overflow: hidden;
+}
+.signin-left {
+  background: var(--cream); display: flex; flex-direction: column; justify-content: center; padding: 80px 72px;
+}
+.signin-right {
+  background-color: #D4B87A;
+  background-image:
+    repeating-linear-gradient(transparent 0px,transparent 30px,rgba(140,95,20,0.3) 30px,rgba(140,95,20,0.3) 60px),
+    repeating-linear-gradient(90deg,transparent 0px,transparent 30px,rgba(140,95,20,0.3) 30px,rgba(140,95,20,0.3) 60px);
+  display: flex; align-items: center; justify-content: center; padding: 60px;
+}
+.signin-preview-card {
+  background: rgba(255,255,255,0.95); border-radius: 20px; padding: 32px;
+  box-shadow: var(--shadow-lg); max-width: 340px; width: 100%;
+}
+.signin-eyebrow { font-family: var(--font-body); font-size: 11px; font-weight: 300; letter-spacing: 0.1em; text-transform: uppercase; color: var(--tan); margin-bottom: 8px; }
+.signin-headline { font-family: var(--font-serif); font-size: 44px; font-style: italic; font-weight: 600; color: var(--text); line-height: 1.1; margin-bottom: 16px; }
+.signin-sub { font-size: 15px; color: var(--text-mid); line-height: 1.65; margin-bottom: 36px; }
+.signin-form { display: flex; flex-direction: column; gap: 14px; }
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-label { font-size: 11px; font-weight: 600; color: var(--text-mid); letter-spacing: 0.06em; text-transform: uppercase; }
+.form-input {
+  padding: 12px 16px; border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+  background: var(--white); font-family: var(--font-body); font-size: 14px; color: var(--text);
+  transition: border-color 0.18s; outline: none;
+}
+.form-input:focus { border-color: var(--brown); }
+.signin-btn {
+  padding: 14px; background: var(--brown); color: white; border: none; border-radius: 50px;
+  font-family: var(--font-body); font-size: 15px; font-weight: 600; cursor: pointer;
+  transition: all 0.2s; margin-top: 4px;
+}
+.signin-btn:hover { background: #4A3024; transform: translateY(-1px); }
+.signin-btn:disabled { opacity: 0.4; cursor: default; transform: none; }
+.signin-note { font-size: 12px; color: var(--text-light); text-align: center; margin-top: 8px; line-height: 1.5; }
+
+/* ── STUDIO LAYOUT ── */
+.studio-layout {
+  display: grid; grid-template-columns: 520px 1fr;
+  min-height: calc(100vh - 64px);
+}
+.studio-form-panel {
+  border-right: 1px solid var(--border);
+  overflow-y: auto; height: calc(100vh - 64px);
+  padding: 32px 32px 80px;
+}
+.studio-preview-panel {
+  position: sticky; top: 64px; height: calc(100vh - 64px);
+  overflow-y: auto;
+  background: var(--warm-beige);
+  display: flex; flex-direction: column; align-items: center;
+  padding: 40px 32px;
+}
+
+/* ── FORM SECTIONS ── */
+.form-section { margin-bottom: 32px; }
+.form-section-head {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 18px; padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+.form-section-icon { font-size: 18px; }
+.form-section-title { font-family: var(--font-serif); font-size: 18px; font-weight: 600; color: var(--text); }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+.form-label { font-size: 11px; font-weight: 600; color: var(--text-mid); letter-spacing: 0.06em; text-transform: uppercase; }
+.form-input, .form-select, .form-textarea {
+  padding: 10px 14px; border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+  background: var(--white); font-family: var(--font-body); font-size: 14px; color: var(--text);
+  transition: border-color 0.18s; outline: none; width: 100%;
+}
+.form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--brown); }
+.form-textarea { resize: vertical; line-height: 1.5; }
+.form-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239C7B6A' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px;
+}
+
+/* ── DYNAMIC LISTS ── */
+.list-item-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.list-item-input { flex: 1; }
+.list-num { width: 24px; height: 24px; border-radius: 50%; background: var(--warm-beige); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: var(--brown); flex-shrink: 0; }
+.list-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--tan); flex-shrink: 0; margin: 0 4px; }
+.remove-btn { width: 28px; height: 28px; border-radius: 50%; border: 1.5px solid var(--border); background: var(--white); cursor: pointer; color: var(--text-light); font-size: 14px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.15s; }
+.remove-btn:hover { border-color: #C0392B; color: #C0392B; background: #fff5f5; }
+.add-btn { display: flex; align-items: center; gap: 8px; padding: 8px 14px; background: var(--warm-beige); border: 1.5px dashed var(--border); border-radius: var(--radius-sm); font-size: 13px; color: var(--text-mid); cursor: pointer; transition: all 0.18s; font-family: var(--font-body); width: 100%; margin-top: 4px; }
+.add-btn:hover { border-color: var(--brown); color: var(--brown); background: var(--cream); }
+
+/* ── HEALTH LABELS ── */
+.label-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+.label-chip { padding: 6px 14px; border-radius: 50px; border: 1.5px solid var(--border); background: var(--white); font-size: 12px; font-weight: 500; color: var(--text-mid); cursor: pointer; transition: all 0.15s; }
+.label-chip:hover { border-color: var(--tan); }
+.label-chip.active { border-width: 2px; font-weight: 600; }
+
+/* ── GINGHAM PICKER ── */
+.gingham-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; }
+.gingham-swatch {
+  cursor: pointer; border-radius: 10px; overflow: hidden;
+  aspect-ratio: 1; position: relative;
+  border: 3px solid transparent; transition: all 0.18s;
+  box-shadow: var(--shadow);
+}
+.gingham-swatch:hover { transform: scale(1.06); }
+.gingham-swatch.active { border-color: var(--brown); box-shadow: 0 0 0 2px var(--brown); transform: scale(1.06); }
+.gingham-swatch-inner { width: 100%; height: 100%; }
+.gingham-name { font-size: 10px; color: var(--text-light); text-align: center; margin-top: 5px; font-weight: 500; }
+
+/* ── ILLUSTRATION PICKER ── */
+.illus-tabs { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; }
+.illus-tab { padding: 6px 14px; border-radius: 50px; border: 1.5px solid var(--border); background: var(--white); font-size: 12px; font-weight: 500; color: var(--text-mid); cursor: pointer; transition: all 0.15s; font-family: var(--font-body); }
+.illus-tab:hover { border-color: var(--tan); }
+.illus-tab.active { background: var(--brown); border-color: var(--brown); color: white; }
+.illus-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.illus-btn {
+  border-radius: 12px; border: 2px solid var(--border);
+  background: var(--white); cursor: pointer; padding: 10px 6px 8px;
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  transition: all 0.15s; box-shadow: var(--shadow);
+}
+.illus-btn:hover { transform: translateY(-2px); border-color: var(--tan); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+.illus-btn.active { border-color: var(--brown); background: var(--warm-beige); box-shadow: 0 0 0 2px var(--brown); }
+.illus-btn svg { width: 48px; height: 48px; display: block; }
+.illus-label { font-size: 10px; color: var(--text-light); font-weight: 500; text-align: center; line-height: 1.2; }
+
+/* ── DECORATION PICKER ── */
+.deco-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.deco-btn {
+  padding: 12px 8px; border-radius: 10px; border: 2px solid var(--border);
+  background: var(--white); cursor: pointer; text-align: center;
+  transition: all 0.15s; box-shadow: var(--shadow);
+}
+.deco-btn:hover { border-color: var(--tan); transform: translateY(-2px); }
+.deco-btn.active { border-color: var(--brown); background: var(--warm-beige); }
+.deco-preview { font-size: 28px; margin-bottom: 4px; }
+.deco-label { font-size: 10px; color: var(--text-light); font-weight: 500; }
+
+/* ── PREVIEW CARD ── */
+.preview-label { font-family: var(--font-body); font-size: 11px; font-weight: 300; letter-spacing: 0.1em; text-transform: uppercase; color: var(--tan); margin-bottom: 16px; text-align: center; }
+.preview-card {
+  width: 100%; max-width: 380px;
+  background: var(--white); border-radius: 18px;
+  overflow: hidden; box-shadow: var(--shadow-lg);
+}
+.preview-hero {
+  width: 100%; height: 220px;
+  display: flex; align-items: center; justify-content: center;
+  position: relative; overflow: hidden;
+}
+.preview-hero-deco {
+  position: absolute; font-size: 32px; opacity: 0.55;
+  pointer-events: none; user-select: none;
+}
+.preview-illus { width: 110px; height: 110px; filter: drop-shadow(0 6px 16px rgba(0,0,0,0.16)); position: relative; z-index: 1; }
+.preview-illus svg { width: 100%; height: 100%; }
+.preview-body { padding: 16px 18px 20px; }
+.preview-rd { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.preview-avatar { width: 26px; height: 26px; border-radius: 50%; background: var(--tan); display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: white; }
+.preview-rd-name { font-size: 12px; font-weight: 600; color: var(--text); }
+.preview-rd-creds { font-size: 11px; color: var(--text-light); }
+.preview-title { font-family: var(--font-serif); font-size: 20px; font-style: italic; font-weight: 600; color: var(--text); line-height: 1.25; margin-bottom: 3px; }
+.preview-subtitle { font-size: 12px; color: var(--text-light); font-style: italic; font-family: var(--font-serif); margin-bottom: 10px; }
+.preview-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 10px; }
+.preview-tag { padding: 3px 9px; border-radius: 50px; font-size: 11px; font-weight: 500; }
+.preview-meta { display: flex; gap: 12px; }
+.preview-meta-item { font-size: 11px; color: var(--text-light); }
+
+/* ── FULL RECIPE PREVIEW ── */
+.preview-full { width: 100%; max-width: 380px; margin-top: 24px; }
+.preview-full-toggle { display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 12px; color: var(--text-light); cursor: pointer; background: none; border: none; font-family: var(--font-body); margin-bottom: 12px; }
+.preview-full-toggle:hover { color: var(--brown); }
+.preview-recipe-sheet { background: var(--white); border-radius: 18px; padding: 24px 20px; box-shadow: var(--shadow-lg); }
+.preview-recipe-eyebrow { font-family: var(--font-body); font-size: 10px; font-weight: 300; letter-spacing: 0.1em; text-transform: uppercase; color: var(--tan); margin-bottom: 3px; }
+.preview-recipe-title { font-family: var(--font-serif); font-size: 22px; font-style: italic; font-weight: 600; color: var(--text); line-height: 1.2; margin-bottom: 4px; }
+.preview-recipe-sub { font-family: var(--font-serif); font-style: italic; font-size: 13px; color: var(--text-light); margin-bottom: 12px; }
+.preview-section-head { font-family: var(--font-serif); font-size: 18px; font-style: italic; color: var(--brown); margin-bottom: 8px; margin-top: 16px; }
+.preview-ing-item { padding: 7px 0; border-bottom: 1px solid var(--warm-beige); font-size: 13px; color: var(--text); display: flex; align-items: center; gap: 8px; }
+.preview-ing-item::before { content: ''; width: 4px; height: 4px; border-radius: 50%; background: var(--tan); flex-shrink: 0; }
+.preview-step { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 10px; }
+.preview-step-num { width: 22px; height: 22px; border-radius: 50%; background: var(--warm-beige); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: var(--brown); flex-shrink: 0; margin-top: 1px; }
+.preview-step-text { font-size: 13px; color: var(--text); line-height: 1.5; }
+.preview-note { margin-top: 14px; padding: 12px 14px; background: var(--warm-beige); border-radius: 8px; border-left: 3px solid var(--tan); font-size: 12px; color: var(--text-mid); font-style: italic; font-family: var(--font-serif); line-height: 1.5; }
+
+/* ── SUCCESS ── */
+.success-page { min-height: calc(100vh - 64px); display: flex; align-items: center; justify-content: center; padding: 40px; }
+.success-card { background: var(--white); border-radius: 20px; padding: 60px 48px; text-align: center; max-width: 500px; box-shadow: var(--shadow-lg); }
+.success-icon { font-size: 64px; margin-bottom: 20px; }
+.success-title { font-family: var(--font-serif); font-size: 32px; font-style: italic; font-weight: 600; color: var(--text); margin-bottom: 12px; }
+.success-text { font-size: 15px; color: var(--text-mid); line-height: 1.65; margin-bottom: 32px; }
+.success-btn { padding: 14px 36px; background: var(--brown); color: white; border: none; border-radius: 50px; font-family: var(--font-body); font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+.success-btn:hover { background: #4A3024; transform: translateY(-1px); }
+
+@keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+.fade-up { animation: fadeUp 0.28s ease forwards; }
+
+@media (max-width: 900px) {
+  .studio-layout { grid-template-columns: 1fr; }
+  .studio-preview-panel { position: relative; top: 0; height: auto; }
+  .signin-page { grid-template-columns: 1fr; }
+  .signin-right { display: none; }
+}
+</style>
+</head>
+<body>
+
+<form name="recipe-submission" data-netlify="true" netlify-honeypot="bot-field" hidden>
+  <input type="text" name="dietician-name" />
+  <input type="email" name="dietician-email" />
+  <input type="text" name="credentials" />
+  <input type="text" name="recipe-title" />
+  <input type="text" name="recipe-subtitle" />
+  <input type="text" name="health-labels" />
+  <input type="text" name="prep-time" />
+  <input type="text" name="cook-time" />
+  <input type="text" name="servings" />
+  <textarea name="ingredients"></textarea>
+  <textarea name="instructions"></textarea>
+  <textarea name="note"></textarea>
+  <input type="text" name="illustration" />
+  <input type="text" name="background" />
+  <input type="text" name="bot-field" />
+</form>
+
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState } = React;
+
+const LABEL_MAP = {
+  pcos: { label: 'PCOS', color: '#F2C4CE', text: '#8B3A52' },
+  fertility: { label: 'Fertility', color: '#C8E6C4', text: '#2E6B3E' },
+  hormones: { label: 'Hormones', color: '#F5E6A3', text: '#7A6000' },
+  energy: { label: 'Energy', color: '#FFD9B3', text: '#8B4A00' },
+  period: { label: 'Period Health', color: '#F4C4C4', text: '#8B2020' },
+  gut: { label: 'Gut Health', color: '#C4DEB8', text: '#2E5E1E' },
+  thyroid: { label: 'Thyroid', color: '#B8D4E8', text: '#1E4E6E' },
+  menopause: { label: 'Menopause', color: '#D4B8E8', text: '#4A2E6E' },
+  postpartum: { label: 'Postpartum', color: '#F5E6A3', text: '#6E5000' },
+  endometriosis: { label: 'Endo', color: '#F2C4CE', text: '#6E1E3A' },
+  'high-protein': { label: 'High Protein', color: '#D4C4B0', text: '#4A3020' },
+  'anti-inflammatory': { label: 'Anti-Inflam.', color: '#C4DEB8', text: '#2E5E1E' },
+  'gut-friendly': { label: 'Gut-Friendly', color: '#C8E6C4', text: '#2E6B3E' },
+};
+
+const GINGHAM_OPTIONS = [
+  { id: 'sage',      name: 'Sage',         bg: '#A8C4A8', s: 'rgba(58,107,74,0.32)' },
+  { id: 'rose',      name: 'Rose',         bg: '#D9A0A0', s: 'rgba(160,60,60,0.30)' },
+  { id: 'tan',       name: 'Tan',          bg: '#D4B87A', s: 'rgba(140,95,20,0.34)' },
+  { id: 'clay',      name: 'Clay',         bg: '#C8A080', s: 'rgba(140,80,30,0.32)' },
+  { id: 'plum',      name: 'Plum',         bg: '#BBA8CC', s: 'rgba(90,50,130,0.28)' },
+  { id: 'wheat',     name: 'Wheat',        bg: '#EDD9A3', s: 'rgba(140,95,20,0.28)' },
+  { id: 'blush',     name: 'Blush',        bg: '#EDCACA', s: 'rgba(155,52,68,0.30)' },
+  { id: 'sky',       name: 'Sky',          bg: '#B6CAE0', s: 'rgba(20,48,108,0.26)' },
+  { id: 'mint',      name: 'Mint',         bg: '#B8E0D4', s: 'rgba(20,100,80,0.28)' },
+  { id: 'golden',    name: 'Golden',       bg: '#EDE0A0', s: 'rgba(144,112,16,0.32)' },
+  { id: 'terracotta',name: 'Terracotta',   bg: '#E8C4A8', s: 'rgba(140,60,20,0.30)' },
+  { id: 'mocha',     name: 'Mocha',        bg: '#C8B09C', s: 'rgba(80,40,16,0.34)' },
+];
+
+const SVG_P = `viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"`;
+const ILLUSTRATIONS = {
+  'Breakfast': [
+    { id:'porridge', label:'Porridge', svg:`<svg ${SVG_P}><path d="M10 28 Q10 52 32 52 Q54 52 54 28" fill="#F5EDD8" stroke="#7C5C3E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 28 Q32 22 56 28" stroke="#7C5C3E" stroke-width="1.8" stroke-linecap="round"/><path d="M18 38 Q22 34 26 38 Q30 42 34 38 Q38 34 42 38 Q46 42 46 38" stroke="#C8A882" stroke-width="1.3" fill="none" stroke-linecap="round"/><circle cx="22" cy="30" r="3" fill="#C8957A" stroke="#7C5C3E" stroke-width="1"/><circle cx="32" cy="28" r="3" fill="#C8957A" stroke="#7C5C3E" stroke-width="1"/><circle cx="42" cy="30" r="3" fill="#C8957A" stroke="#7C5C3E" stroke-width="1"/></svg>` },
+    { id:'eggs', label:'Eggs', svg:`<svg ${SVG_P}><ellipse cx="28" cy="38" rx="20" ry="16" fill="#E8CDA0" stroke="#7C5C3E" stroke-width="1.8"/><path d="M47 38 L60 34" stroke="#7C5C3E" stroke-width="2.5" stroke-linecap="round"/><circle cx="28" cy="38" r="7" fill="#F0C840" stroke="#7C5C3E" stroke-width="1.3"/></svg>` },
+    { id:'smoothie-bowl', label:'Smoothie Bowl', svg:`<svg ${SVG_P}><path d="M10 28 Q10 54 32 54 Q54 54 54 28" fill="#F5EDD8" stroke="#7C5C3E" stroke-width="1.8" stroke-linecap="round"/><path d="M8 28 Q32 22 56 28" stroke="#7C5C3E" stroke-width="1.8" stroke-linecap="round"/><path d="M14 32 Q32 28 50 32 Q50 46 32 48 Q14 46 14 32 Z" fill="#C8957A" opacity="0.4"/><circle cx="32" cy="30" r="1.5" fill="#7C5C3E"/><circle cx="36" cy="33" r="1.5" fill="#7C5C3E"/><circle cx="29" cy="34" r="1.5" fill="#7C5C3E"/><circle cx="42" cy="31" r="4" fill="#C8957A" stroke="#7C5C3E" stroke-width="1.2"/></svg>` },
+    { id:'avocado', label:'Avocado', svg:`<svg ${SVG_P}><path d="M32 6 C20 6 14 22 14 36 C14 50 22 58 32 58 C42 58 50 50 50 36 C50 22 44 6 32 6 Z" fill="#6B7F52" stroke="#7C5C3E" stroke-width="1.8"/><path d="M32 12 C23 12 20 24 20 36 C20 48 25 52 32 52 C39 52 44 48 44 36 C44 24 41 12 32 12 Z" fill="#E8CDA0" stroke="#7C5C3E" stroke-width="1.5"/><ellipse cx="32" cy="38" rx="8" ry="9" fill="#C8A060" stroke="#7C5C3E" stroke-width="1.5"/></svg>` },
+  ],
+  'Salads & Veg': [
+    { id:'salad-bowl', label:'Salad', svg:`<svg ${SVG_P}><path d="M10 34 Q10 56 32 56 Q54 56 54 34" fill="#F5EDD8" stroke="#7C5C3E" stroke-width="1.8" stroke-linecap="round"/><path d="M8 34 Q32 28 56 34" stroke="#7C5C3E" stroke-width="1.8" stroke-linecap="round"/><path d="M20 30 Q16 20 22 14 Q28 20 22 28" fill="#8BA888" stroke="#7C5C3E" stroke-width="1.3"/><path d="M32 28 Q30 18 36 12 Q42 18 34 28" fill="#8BA888" stroke="#7C5C3E" stroke-width="1.3"/><circle cx="38" cy="35" r="4" fill="#C8957A" stroke="#7C5C3E" stroke-width="1.2"/></svg>` },
+    { id:'broccoli', label:'Broccoli', svg:`<svg ${SVG_P}><rect x="29" y="40" width="6" height="18" rx="3" fill="#8BA888" stroke="#7C5C3E" stroke-width="1.5"/><circle cx="32" cy="30" r="12" fill="#8BA888" stroke="#7C5C3E" stroke-width="1.5"/><circle cx="20" cy="34" r="9" fill="#8BA888" stroke="#7C5C3E" stroke-width="1.5"/><circle cx="44" cy="34" r="9" fill="#8BA888" stroke="#7C5C3E" stroke-width="1.5"/><circle cx="32" cy="26" r="5" fill="#A8C5A0" stroke="#7C5C3E" stroke-width="1"/></svg>` },
+    { id:'carrot', label:'Carrot', svg:`<svg ${SVG_P}><path d="M28 14 Q32 14 36 14 L40 50 Q36 58 32 58 Q28 58 24 50 Z" fill="#C8957A" stroke="#7C5C3E" stroke-width="1.8" stroke-linejoin="round"/><path d="M30 14 Q24 6 18 8 Q22 14 28 16" fill="#8BA888" stroke="#7C5C3E" stroke-width="1.3"/><path d="M32 14 Q32 4 34 4 Q36 4 34 14" fill="#8BA888" stroke="#7C5C3E" stroke-width="1.3"/><path d="M34 14 Q40 6 46 8 Q42 14 36 16" fill="#8BA888" stroke="#7C5C3E" stroke-width="1.3"/></svg>` },
+    { id:'tomatoes', label:'Tomatoes', svg:`<svg ${SVG_P}><circle cx="18" cy="26" r="10" fill="#C8957A" stroke="#7C5C3E" stroke-width="1.8"/><circle cx="46" cy="26" r="10" fill="#C8957A" stroke="#7C5C3E" stroke-width="1.8"/><circle cx="32" cy="44" r="10" fill="#C8957A" stroke="#7C5C3E" stroke-width="1.8"/></svg>` },
+  ],
+  'Mains': [
+    { id:'soup-pot', label:'Soup Pot', svg:`<svg ${SVG_P}><rect x="12" y="28" width="40" height="28" rx="6" fill="#E8CDA0" stroke="#7C5C3E" stroke-width="1.8"/><rect x="10" y="24" width="44" height="6" rx="3" fill="#F5EDD8" stroke="#7C5C3E" stroke-width="1.5"/><rect x="28" y="18" width="8" height="8" rx="4" fill="#7C5C3E" stroke="#7C5C3E" stroke-width="1"/><path d="M12 34 Q6 34 6 40 Q6 44 12 44" stroke="#7C5C3E" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M52 34 Q58 34 58 40 Q58 44 52 44" stroke="#7C5C3E" stroke-width="2" fill="none" stroke-linecap="round"/></svg>` },
+    { id:'fish', label:'Fish', svg:`<svg ${SVG_P}><path d="M10 32 Q10 18 32 14 Q54 18 56 32 Q54 46 32 50 Q10 46 10 32 Z" fill="#F5EDD8" stroke="#7C5C3E" stroke-width="1.8"/><circle cx="44" cy="28" r="4" fill="white" stroke="#7C5C3E" stroke-width="1.5"/><circle cx="44" cy="28" r="2" fill="#7C5C3E"/><path d="M10 32 Q2 24 4 16 Q8 24 10 28" fill="#E8CDA0" stroke="#7C5C3E" stroke-width="1.5"/><path d="M10 32 Q2 40 4 48 Q8 40 10 36" fill="#E8CDA0" stroke="#7C5C3E" stroke-width="1.5"/></svg>` },
+    { id:'grain-bowl', label:'Grain Bowl', svg:`<svg ${SVG_P}><path d="M10 30 Q10 54 32 54 Q54 54 54 30" fill="#F5EDD8" stroke="#7C5C3E" stroke-width="1.8" stroke-linecap="round"/><path d="M8 30 Q32 24 56 30" stroke="#7C5C3E" stroke-width="1.8" stroke-linecap="round"/><circle cx="32" cy="30" r="5" fill="#8BA888" stroke="#7C5C3E" stroke-width="1.3"/><circle cx="44" cy="32" r="4" fill="#C8957A" stroke="#7C5C3E" stroke-width="1.2"/><circle cx="20" cy="32" r="4" fill="#8BA888" stroke="#7C5C3E" stroke-width="1.2"/></svg>` },
+    { id:'stir-fry', label:'Stir Fry', svg:`<svg ${SVG_P}><path d="M48 36 L60 28" stroke="#7C5C3E" stroke-width="2.5" stroke-linecap="round"/><path d="M10 24 Q6 36 16 46 Q24 54 32 54 Q40 54 48 46 Q58 36 54 24" fill="#E8CDA0" stroke="#7C5C3E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 24 Q32 18 56 24" stroke="#7C5C3E" stroke-width="1.8" stroke-linecap="round"/><circle cx="36" cy="34" r="4" fill="#C8957A" stroke="#7C5C3E" stroke-width="1.2"/></svg>` },
+  ],
+  'Snacks': [
+    { id:'energy-ball', label:'Energy Ball', svg:`<svg ${SVG_P}><circle cx="48" cy="22" r="12" fill="#C8A060" stroke="#7C5C3E" stroke-width="1.5"/><circle cx="28" cy="36" r="20" fill="#C8A060" stroke="#7C5C3E" stroke-width="1.8"/><path d="M14 32 Q16 30 18 32" stroke="#F5EDD8" stroke-width="1.3" fill="none" stroke-linecap="round"/><path d="M20 26 Q22 24 24 26" stroke="#F5EDD8" stroke-width="1.3" fill="none" stroke-linecap="round"/><path d="M30 22 Q32 20 34 22" stroke="#F5EDD8" stroke-width="1.3" fill="none" stroke-linecap="round"/></svg>` },
+    { id:'almonds', label:'Nuts', svg:`<svg ${SVG_P}><ellipse cx="22" cy="24" rx="8" ry="12" fill="#E8CDA0" stroke="#7C5C3E" stroke-width="1.8" transform="rotate(-20 22 24)"/><ellipse cx="42" cy="22" rx="8" ry="12" fill="#E8CDA0" stroke="#7C5C3E" stroke-width="1.8" transform="rotate(15 42 22)"/><path d="M16 38 Q16 50 32 52 Q48 50 48 38 Q40 34 32 34 Q24 34 16 38 Z" fill="#C8A060" stroke="#7C5C3E" stroke-width="1.8"/></svg>` },
+    { id:'apple', label:'Apple', svg:`<svg ${SVG_P}><path d="M32 12 Q38 6 44 10 Q40 16 32 14" fill="#8BA888" stroke="#7C5C3E" stroke-width="1.3"/><path d="M16 22 Q10 22 10 34 Q10 54 32 56 Q54 54 54 34 Q54 22 48 22 Q40 16 32 18 Q24 16 16 22 Z" fill="#C8957A" stroke="#7C5C3E" stroke-width="1.8"/></svg>` },
+    { id:'nut-butter', label:'Nut Butter', svg:`<svg ${SVG_P}><path d="M16 24 L14 58 Q14 60 32 60 Q50 60 50 58 L48 24 Z" fill="#F5EDD8" stroke="#7C5C3E" stroke-width="1.8" stroke-linejoin="round"/><rect x="14" y="18" width="36" height="8" rx="4" fill="#C8A060" stroke="#7C5C3E" stroke-width="1.8"/><rect x="20" y="32" width="24" height="18" rx="3" fill="#E8CDA0" stroke="#C8A882" stroke-width="1.2"/></svg>` },
+  ],
+  'Drinks': [
+    { id:'tea-cup', label:'Tea', svg:`<svg ${SVG_P}><path d="M14 34 L16 52 Q16 54 32 54 Q48 54 48 52 L50 34 Z" fill="#F5EDD8" stroke="#7C5C3E" stroke-width="1.8" stroke-linejoin="round"/><ellipse cx="32" cy="34" rx="18" ry="5" fill="#F5EDD8" stroke="#7C5C3E" stroke-width="1.8"/><path d="M50 38 Q58 38 58 44 Q58 50 50 50" stroke="#7C5C3E" stroke-width="2" fill="none" stroke-linecap="round"/><ellipse cx="32" cy="34" rx="14" ry="3.5" fill="#C8A882" opacity="0.6"/></svg>` },
+    { id:'smoothie', label:'Smoothie', svg:`<svg ${SVG_P}><path d="M18 10 L14 56 Q14 58 32 58 Q50 58 50 56 L46 10 Z" fill="#F5EDD8" stroke="#7C5C3E" stroke-width="1.8" stroke-linejoin="round"/><path d="M19 12 L15 52 Q15 54 32 54 Q49 54 49 52 L45 12 Z" fill="#C8957A" opacity="0.35"/><rect x="36" y="4" width="4" height="40" rx="2" fill="#8BA888" stroke="#7C5C3E" stroke-width="1.2"/></svg>` },
+    { id:'matcha', label:'Matcha', svg:`<svg ${SVG_P}><path d="M8 30 Q8 56 32 56 Q56 56 56 30" fill="#F5EDD8" stroke="#7C5C3E" stroke-width="1.8" stroke-linecap="round"/><ellipse cx="32" cy="30" rx="24" ry="7" fill="#F5EDD8" stroke="#7C5C3E" stroke-width="1.8"/><ellipse cx="32" cy="30" rx="20" ry="5.5" fill="#8BA888" opacity="0.7"/></svg>` },
+    { id:'green-juice', label:'Green Juice', svg:`<svg ${SVG_P}><path d="M18 12 L16 56 Q16 58 32 58 Q48 58 48 56 L46 12 Z" fill="#F5EDD8" stroke="#7C5C3E" stroke-width="1.8" stroke-linejoin="round"/><path d="M19 14 L17 52 Q17 54 32 54 Q47 54 47 52 L45 14 Z" fill="#8BA888" opacity="0.45"/><rect x="30" y="4" width="5" height="18" rx="2.5" fill="#8BA888" stroke="#7C5C3E" stroke-width="1.3"/></svg>` },
+  ],
+  'Sweets': [
+    { id:'chia-pudding', label:'Chia Pudding', svg:`<svg ${SVG_P}><path d="M16 24 L14 58 Q14 60 32 60 Q50 60 50 58 L48 24 Z" fill="#F5EDD8" stroke="#7C5C3E" stroke-width="1.8" stroke-linejoin="round"/><path d="M15 42 L14.5 56 Q14.5 58 32 58 Q49.5 58 49.5 56 L49 42 Z" fill="#E8CDA0" opacity="0.8"/><circle cx="22" cy="50" r="1.5" fill="#7C5C3E" opacity="0.6"/><circle cx="28" cy="46" r="1.5" fill="#7C5C3E" opacity="0.6"/><circle cx="34" cy="52" r="1.5" fill="#7C5C3E" opacity="0.6"/><circle cx="40" cy="48" r="1.5" fill="#7C5C3E" opacity="0.6"/></svg>` },
+    { id:'berries', label:'Berry Bowl', svg:`<svg ${SVG_P}><path d="M12 34 Q12 56 32 56 Q52 56 52 34" fill="#F5EDD8" stroke="#7C5C3E" stroke-width="1.8" stroke-linecap="round"/><path d="M10 34 Q32 28 54 34" stroke="#7C5C3E" stroke-width="1.8" stroke-linecap="round"/><circle cx="34" cy="28" r="5" fill="#7C6FA0" stroke="#7C5C3E" stroke-width="1.3"/><circle cx="42" cy="30" r="5" fill="#7C6FA0" stroke="#7C5C3E" stroke-width="1.3"/><circle cx="38" cy="22" r="5" fill="#7C6FA0" stroke="#7C5C3E" stroke-width="1.3"/><circle cx="28" cy="30" r="5" fill="#C8957A" stroke="#7C5C3E" stroke-width="1.3"/></svg>` },
+    { id:'fruit-bowl', label:'Fruit Bowl', svg:`<svg ${SVG_P}><path d="M10 36 Q10 56 32 56 Q54 56 54 36" fill="#F5EDD8" stroke="#7C5C3E" stroke-width="1.8" stroke-linecap="round"/><path d="M8 36 Q32 30 56 36" stroke="#7C5C3E" stroke-width="1.8" stroke-linecap="round"/><path d="M22 20 Q16 24 18 32 Q22 38 26 32 Q28 24 22 20 Z" fill="#C8957A" stroke="#7C5C3E" stroke-width="1.5"/><circle cx="32" cy="28" r="5" fill="#7C6FA0" stroke="#7C5C3E" stroke-width="1.3"/><circle cx="44" cy="22" r="8" fill="#E8A060" stroke="#7C5C3E" stroke-width="1.5"/></svg>` },
+    { id:'honey', label:'Honey Jar', svg:`<svg ${SVG_P}><path d="M18 26 L16 56 Q16 60 32 60 Q48 60 48 56 L46 26 Q40 20 32 20 Q24 20 18 26 Z" fill="#F5EDD8" stroke="#7C5C3E" stroke-width="1.8"/><path d="M19 34 L17.5 54 Q17.5 56 32 56 Q46.5 56 46.5 54 L45 34 Z" fill="#E8A060" opacity="0.7"/><rect x="20" y="18" width="24" height="10" rx="5" fill="#C8A060" stroke="#7C5C3E" stroke-width="1.5"/></svg>` },
+  ],
+};
+
+const DECORATIONS = [
+  { id: 'none',    label: 'Clean',   preview: '—',  decos: [] },
+  { id: 'herbs',   label: 'Herbs',   preview: '🌿', decos: [{e:'🌿',t:'-10%',l:'5%',r:0,b:0},{e:'🌱',t:'auto',l:'auto',r:'8%',b:'10%'}] },
+  { id: 'floral',  label: 'Floral',  preview: '🌸', decos: [{e:'🌸',t:'8%',r:'6%',l:'auto',b:0},{e:'🌷',t:'auto',l:'5%',r:'auto',b:'8%'}] },
+  { id: 'sparkle', label: 'Sparkle', preview: '✨', decos: [{e:'✨',t:'8%',l:'8%',r:0,b:0},{e:'⭐',t:'12%',r:'10%',l:'auto',b:0},{e:'✨',t:'auto',l:'auto',r:'6%',b:'12%'}] },
+  { id: 'citrus',  label: 'Citrus',  preview: '🍋', decos: [{e:'🍋',t:'-8%',r:'8%',l:'auto',b:0},{e:'🫙',t:'auto',l:'6%',r:'auto',b:'8%'}] },
+  { id: 'seeds',   label: 'Seeds',   preview: '🌾', decos: [{e:'🌾',t:'6%',l:'5%',r:0,b:0},{e:'🌾',t:'auto',r:'5%',l:'auto',b:'8%'}] },
+  { id: 'nature',  label: 'Nature',  preview: '🍃', decos: [{e:'🍃',t:'5%',l:'4%',r:0,b:0},{e:'🌿',t:'auto',r:'5%',l:'auto',b:'8%'}] },
+  { id: 'festive', label: 'Festive', preview: '🎀', decos: [{e:'🎀',t:'5%',l:'5%',r:0,b:0},{e:'🌟',t:'auto',l:'auto',r:'6%',b:'10%'}] },
+];
+
+function getGinghamStyle(id, size = 26) {
+  const p = GINGHAM_OPTIONS.find(g => g.id === id) || GINGHAM_OPTIONS[0];
+  return {
+    backgroundColor: p.bg,
+    backgroundImage: [
+      `repeating-linear-gradient(transparent 0px,transparent ${size}px,${p.s} ${size}px,${p.s} ${size*2}px)`,
+      `repeating-linear-gradient(90deg,transparent 0px,transparent ${size}px,${p.s} ${size}px,${p.s} ${size*2}px)`,
+    ].join(','),
+  };
+}
+
+function ListEditor({ items, onChange, placeholder, numbered }) {
+  const update = (i, v) => { const n=[...items]; n[i]=v; onChange(n); };
+  const remove = (i) => onChange(items.filter((_,idx)=>idx!==i));
+  const add = () => onChange([...items,'']);
+  return (
+    <div>
+      {items.map((item,i) => (
+        <div key={i} className="list-item-row">
+          {numbered ? <span className="list-num">{i+1}</span> : <span className="list-dot"/>}
+          <input className="form-input list-item-input" value={item} onChange={e=>update(i,e.target.value)} placeholder={`${placeholder} ${i+1}`} />
+          <button className="remove-btn" onClick={()=>remove(i)}>×</button>
+        </div>
+      ))}
+      <button className="add-btn" onClick={add}>+ Add {numbered?'step':'ingredient'}</button>
+    </div>
+  );
+}
+
+const ADMIN_PASSWORD = 'nuri2025';
+
+function SignIn({ onSignIn }) {
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+
+  const handleLogin = () => {
+    if (password.trim() === ADMIN_PASSWORD) {
+      onSignIn({ name: 'Admin', email: 'admin@nuri.com', creds: 'nuri.', initials: 'N', avatarColor: '#3A6B4A' });
+    } else {
+      setError('Incorrect password.');
+      setPassword('');
+    }
+  };
+
+  return (
+    <div className="signin-page">
+      <div className="signin-left">
+        <div className="signin-eyebrow">welcome to the</div>
+        <h1 className="signin-headline">Recipe Studio</h1>
+        <p className="signin-sub">Design beautiful recipe cards and publish them directly to the nuri. feed.</p>
+        <div className="signin-form">
+          <div className="form-group">
+            <label className="form-label">Password</label>
+            <input className="form-input" type="password" placeholder="••••••••" value={password}
+              onChange={e=>{setPassword(e.target.value);setError('');}}
+              onKeyDown={e=>e.key==='Enter'&&handleLogin()}
+              style={{borderColor: error ? '#C0392B' : undefined}} />
+          </div>
+          {error && <div style={{color:'#C0392B',fontSize:13,lineHeight:1.4}}>{error}</div>}
+          <button className="signin-btn" disabled={!password} onClick={handleLogin}>
+            Enter Studio →
+          </button>
+          <p className="signin-note">Admin access only.</p>
+        </div>
+      </div>
+      <div className="signin-right">
+        <div className="signin-preview-card">
+          <div style={{fontFamily:'var(--font-logo)',fontSize:22,fontWeight:600,fontStyle:'italic',color:'var(--green-dark)',display:'inline-flex',alignItems:'flex-end',marginBottom:8}}>
+            nuri<span style={{display:'inline-block',width:6,height:6,borderRadius:'50%',background:'var(--rose)',marginLeft:2,marginBottom:2}}/>
+          </div>
+          <div style={{fontFamily:'var(--font-serif)',fontSize:20,fontStyle:'italic',fontWeight:600,color:'var(--text)',marginBottom:8}}>Your recipes, beautifully presented</div>
+          <p style={{fontSize:13,color:'var(--text-mid)',lineHeight:1.6,marginBottom:16}}>Design your card, pick your tablecloth, choose your illustration — then publish straight to the feed.</p>
+          {['🎨  Choose your gingham background','🖼  Pick an illustration','📋  Fill in your recipe','✨  Publish to the feed'].map((s,i,a)=>(
+            <div key={i} style={{display:'flex',alignItems:'center',gap:10,padding:'8px 0',borderBottom:i<a.length-1?'1px solid var(--border)':'none'}}>
+              <span style={{fontSize:13,color:'var(--text-mid)'}}>{s}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function RecipeStudio({ user, onPublish }) {
+  const [title, setTitle] = useState('');
+  const [subtitle, setSubtitle] = useState('');
+  const [prepTime, setPrepTime] = useState('');
+  const [cookTime, setCookTime] = useState('');
+  const [servings, setServings] = useState('');
+  const [labels, setLabels] = useState([]);
+  const [ingredients, setIngredients] = useState(['','']);
+  const [instructions, setInstructions] = useState(['','']);
+  const [note, setNote] = useState('');
+  const [gingham, setGingham] = useState('sage');
+  const [illus, setIllus] = useState(null);
+  const [illusTab, setIllusTab] = useState('Breakfast');
+  const [deco, setDeco] = useState('none');
+  const [showFull, setShowFull] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+
+  const toggleLabel = id => setLabels(p=>p.includes(id)?p.filter(x=>x!==id):[...p,id]);
+  const decoData = DECORATIONS.find(d=>d.id===deco)||DECORATIONS[0];
+  const canPublish = title.trim() && ingredients.some(i=>i.trim()) && instructions.some(i=>i.trim());
+  const initials = user.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+
+  const handlePublish = async () => {
+    setSubmitting(true);
+    const body = new URLSearchParams({
+      'form-name':'recipe-submission','dietician-name':user.name,'dietician-email':user.email,
+      'credentials':user.creds,'recipe-title':title,'recipe-subtitle':subtitle,
+      'health-labels':labels.join(', '),'prep-time':prepTime,'cook-time':cookTime,'servings':servings,
+      'ingredients':ingredients.filter(Boolean).join('\n'),'instructions':instructions.filter(Boolean).join('\n'),
+      'note':note,'illustration':illus?illus.id:'none','background':gingham,
+    });
+    try { await fetch('/',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:body.toString()}); } catch {}
+    const gData = GINGHAM_OPTIONS.find(g=>g.id===gingham)||GINGHAM_OPTIONS[0];
+    const dieticianId = 'rd_'+user.email.replace(/[^a-z0-9]/gi,'').slice(0,12);
+    const rec = { id:'r_'+Date.now(), title:title.trim(), subtitle:subtitle.trim(), dieticianId, healthLabels:labels, prepTime:prepTime||'—', cookTime:cookTime||'—', servings:Number(servings)||0, ingredients:ingredients.filter(Boolean), instructions:instructions.filter(Boolean), note, emoji:'🍽', illusSvg:illus?illus.svg:null, ginghamBg:gData.bg, ginghamS:gData.s };
+    try {
+      const ex = JSON.parse(localStorage.getItem('tee_community_recipes')||'[]');
+      localStorage.setItem('tee_community_recipes', JSON.stringify([...ex,rec]));
+      const exDs = JSON.parse(localStorage.getItem('tee_community_dieticians')||'[]');
+      localStorage.setItem('tee_community_dieticians', JSON.stringify(exDs.map(d=>d.id===dieticianId?{...d,recipeIds:[...(d.recipeIds||[]),rec.id]}:d)));
+    } catch {}
+    setSubmitting(false);
+    onPublish();
+  };
+
+  return (
+    <>
+      <header className="studio-bar">
+        <div className="studio-bar-brand">
+          <span className="studio-bar-logo">nuri<span className="studio-bar-logo-dot"/></span>
+          <div className="studio-bar-divider"/>
+          <span className="studio-bar-title">Recipe Studio</span>
+        </div>
+        <div className="studio-bar-right">
+          <span className="bar-user">👤 {user.name} · {user.creds}</span>
+          <button className="bar-btn bar-btn-primary" disabled={!canPublish||submitting} onClick={handlePublish}>
+            {submitting?'Publishing…':'✦ Publish Recipe'}
+          </button>
+        </div>
+      </header>
+
+      <div className="studio-layout">
+        <div className="studio-form-panel">
+
+          <div className="form-section">
+            <div className="form-section-head"><span className="form-section-icon">📝</span><span className="form-section-title">Recipe Info</span></div>
+            <div className="form-group">
+              <label className="form-label">Recipe title *</label>
+              <input className="form-input" placeholder="e.g. PCOS Berry Hormone Bowl" value={title} onChange={e=>setTitle(e.target.value)} />
+            </div>
+            <div className="form-group">
+              <label className="form-label">Subtitle</label>
+              <input className="form-input" placeholder="e.g. Inositol-rich & anti-androgenic" value={subtitle} onChange={e=>setSubtitle(e.target.value)} />
+            </div>
+            <div className="form-row">
+              <div className="form-group">
+                <label className="form-label">Prep time</label>
+                <input className="form-input" placeholder="e.g. 15 min" value={prepTime} onChange={e=>setPrepTime(e.target.value)} />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Cook time</label>
+                <input className="form-input" placeholder="e.g. 35 min" value={cookTime} onChange={e=>setCookTime(e.target.value)} />
+              </div>
+            </div>
+            <div className="form-group" style={{maxWidth:180}}>
+              <label className="form-label">Servings</label>
+              <input className="form-input" placeholder="e.g. 4" value={servings} onChange={e=>setServings(e.target.value)} />
+            </div>
+          </div>
+
+          <div className="form-section">
+            <div className="form-section-head"><span className="form-section-icon">🏷</span><span className="form-section-title">Health Labels</span></div>
+            <div className="label-grid">
+              {Object.entries(LABEL_MAP).map(([id,info])=>(
+                <button key={id} className={`label-chip ${labels.includes(id)?'active':''}`}
+                  style={labels.includes(id)?{background:info.color,color:info.text,borderColor:info.color}:{}}
+                  onClick={()=>toggleLabel(id)}>{info.label}</button>
+              ))}
+            </div>
+          </div>
+
+          <div className="form-section">
+            <div className="form-section-head"><span className="form-section-icon">🥕</span><span className="form-section-title">Ingredients</span></div>
+            <ListEditor items={ingredients} onChange={setIngredients} placeholder="Ingredient" numbered={false} />
+          </div>
+
+          <div className="form-section">
+            <div className="form-section-head"><span className="form-section-icon">👩‍🍳</span><span className="form-section-title">Instructions</span></div>
+            <ListEditor items={instructions} onChange={setInstructions} placeholder="Step" numbered={true} />
+            <div className="form-group" style={{marginTop:16}}>
+              <label className="form-label">💡 Dietitian note (optional)</label>
+              <textarea className="form-textarea" rows={2} placeholder="Add a nutritional note or serving suggestion…" value={note} onChange={e=>setNote(e.target.value)} />
+            </div>
+          </div>
+
+          <div className="form-section">
+            <div className="form-section-head"><span className="form-section-icon">🏁</span><span className="form-section-title">Card Background</span></div>
+            <div className="gingham-grid">
+              {GINGHAM_OPTIONS.map(g=>(
+                <div key={g.id}>
+                  <div className={`gingham-swatch ${gingham===g.id?'active':''}`} onClick={()=>setGingham(g.id)}>
+                    <div className="gingham-swatch-inner" style={getGinghamStyle(g.id,10)}/>
+                  </div>
+                  <div className="gingham-name">{g.name}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="form-section">
+            <div className="form-section-head"><span className="form-section-icon">🖼</span><span className="form-section-title">Illustration <span style={{fontWeight:400,color:'var(--text-light)',fontSize:12}}>(optional)</span></span></div>
+            <div className="illus-tabs">
+              <button className={`illus-tab ${illus===null?'active':''}`} onClick={()=>setIllus(null)}>None</button>
+              {Object.keys(ILLUSTRATIONS).map(cat=>(
+                <button key={cat} className={`illus-tab ${illusTab===cat&&illus!==null?'active':''}`} onClick={()=>{setIllusTab(cat);if(illus===null)setIllus(ILLUSTRATIONS[cat][0]);else setIllusTab(cat);}}>{cat}</button>
+              ))}
+            </div>
+            {illus!==null&&(
+              <div className="illus-grid">
+                {(ILLUSTRATIONS[illusTab]||[]).map(item=>(
+                  <button key={item.id} className={`illus-btn ${illus&&illus.id===item.id?'active':''}`} onClick={()=>setIllus(item)}>
+                    <div dangerouslySetInnerHTML={{__html:item.svg}} style={{width:48,height:48}}/>
+                    <div className="illus-label">{item.label}</div>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className="form-section">
+            <div className="form-section-head"><span className="form-section-icon">✨</span><span className="form-section-title">Card Decoration</span></div>
+            <div className="deco-grid">
+              {DECORATIONS.map(d=>(
+                <button key={d.id} className={`deco-btn ${deco===d.id?'active':''}`} onClick={()=>setDeco(d.id)}>
+                  <div className="deco-preview">{d.preview}</div>
+                  <div className="deco-label">{d.label}</div>
+                </button>
+              ))}
+            </div>
+          </div>
+
+        </div>
+
+        <div className="studio-preview-panel">
+          <div className="preview-label">live preview</div>
+          <div className="preview-card fade-up">
+            <div className="preview-hero" style={getGinghamStyle(gingham)}>
+              {decoData.decos.map((d,i)=>(
+                <span key={i} className="preview-hero-deco" style={{top:d.t,left:d.l,right:d.r,bottom:d.b}}>{d.e}</span>
+              ))}
+              {illus&&<div className="preview-illus" dangerouslySetInnerHTML={{__html:illus.svg}}/>}
+            </div>
+            <div className="preview-body">
+              <div className="preview-rd">
+                <div className="preview-avatar">{initials}</div>
+                <div>
+                  <div className="preview-rd-name">{user.name}</div>
+                  <div className="preview-rd-creds">{user.creds}</div>
+                </div>
+              </div>
+              <div className="preview-title">{title||'Your recipe title'}</div>
+              {subtitle&&<div className="preview-subtitle">{subtitle}</div>}
+              {labels.length>0&&(
+                <div className="preview-tags">
+                  {labels.slice(0,3).map(l=>{
+                    const info=LABEL_MAP[l];
+                    return info?<span key={l} className="preview-tag" style={{background:info.color,color:info.text}}>{info.label}</span>:null;
+                  })}
+                </div>
+              )}
+              <div className="preview-meta">
+                {prepTime&&<span className="preview-meta-item">⏱ {prepTime}</span>}
+                {cookTime&&<span className="preview-meta-item">🔥 {cookTime}</span>}
+                {servings&&<span className="preview-meta-item">🍽 {servings} servings</span>}
+              </div>
+            </div>
+          </div>
+
+          <div className="preview-full">
+            <button className="preview-full-toggle" onClick={()=>setShowFull(f=>!f)}>
+              {showFull?'▲ Hide full recipe':'▼ Preview full recipe'}
+            </button>
+            {showFull&&(
+              <div className="preview-recipe-sheet fade-up">
+                <div className="preview-recipe-eyebrow">Recipe</div>
+                <div className="preview-recipe-title">{title||'Your recipe title'}</div>
+                {subtitle&&<div className="preview-recipe-sub">{subtitle}</div>}
+                {ingredients.some(Boolean)&&(
+                  <><div className="preview-section-head">Ingredients</div>
+                  {ingredients.filter(Boolean).map((ing,i)=><div key={i} className="preview-ing-item">{ing}</div>)}</>
+                )}
+                {instructions.some(Boolean)&&(
+                  <><div className="preview-section-head">Instructions</div>
+                  {instructions.filter(Boolean).map((step,i)=>(
+                    <div key={i} className="preview-step">
+                      <span className="preview-step-num">{i+1}</span>
+                      <span className="preview-step-text">{step}</span>
+                    </div>
+                  ))}</>
+                )}
+                {note&&<div className="preview-note">💡 {note}</div>}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
+
+function SuccessPage({ user, onAnother }) {
+  return (
+    <>
+      <header className="studio-bar">
+        <div className="studio-bar-brand">
+          <span className="studio-bar-logo">nuri<span className="studio-bar-logo-dot"/></span>
+          <div className="studio-bar-divider"/>
+          <span className="studio-bar-title">Recipe Studio</span>
+        </div>
+      </header>
+      <div className="success-page">
+        <div className="success-card fade-up">
+          <div className="success-icon">🌿</div>
+          <div className="success-title">Recipe submitted!</div>
+          <p className="success-text">Your recipe has been sent to the nuri. team for review. We'll publish it to the feed within 1–2 business days and email you at <strong>{user.email}</strong> when it's live.</p>
+          <button className="success-btn" onClick={onAnother}>Create another recipe</button>
+        </div>
+      </div>
+    </>
+  );
+}
+
+function App() {
+  const [user, setUser] = useState(null);
+  const [published, setPublished] = useState(false);
+  if (!user) return <SignIn onSignIn={setUser} />;
+  if (published) return <SuccessPage user={user} onAnother={()=>setPublished(false)} />;
+  return <RecipeStudio user={user} onPublish={()=>setPublished(true)} />;
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
