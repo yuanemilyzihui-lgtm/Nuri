@@ -2131,12 +2131,11 @@ function AboutTab({ onApply }) {
         <div className="about-section">
           <div className="about-section-eyebrow">who we are</div>
           <h2 className="about-section-title">Built by women, for women.</h2>
-         <p className="about-section-text">nuri. was co-founded by Emily and Malaika — two friends who met at Brown, who have struggled with making sense of conflicting wellness advice while managing chronic conditions. Emily brings brand strategy experience from Ogilvy; Malaika brings technology consulting experience from Accenture.</p>
+  
           <div className="about-team">
             {[
-             { name:'Emily Yuan', role:'Co-Founder', initials:'EY', color:'#C4A882', bio:'Brown \'22. 4 years at Ogilvy leading growth-oriented brand strategy. Oversees North American launch and brand.' },
-{ name:'Malaika Rahimtoola', role:'Co-Founder', initials:'MR', color:'#8FA888', bio:'Brown \'22. 2 years in technology consulting at Accenture. Oversees European launch and operations.' },
-            ].map(m => (
+            { name:'Emily Yuan', role:'Co-Founder · Ex-Ogilvy', initials:'EY', color:'#C4A882', bio:'' },
+            { name:'Malaika Rahimtoola', role:'Co-Founder · Ex-Accenture', initials:'MR', color:'#8FA888', bio:'' },
               <div key={m.name} className="about-team-card">
                 <div className="about-team-banner" style={{ background:`linear-gradient(135deg, ${m.color}88, ${m.color}33)` }}>
                   <div className="about-team-avatar" style={{ background: m.color }}>{m.initials}</div>
