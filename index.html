@@ -731,7 +731,7 @@ const LABEL_MAP = {
 };
 
 const DIETICIANS = [
-  { id:1, name:'Emily', credentials:'Co-founder', specialty:'Women\'s Health Nutrition', bio:'Co-founder of nuri. Building a recipe platform for women managing chronic conditions.', initials:'EY', avatarColor:'#C4A882', followers:0, following:0, tags:['pcos','gut','hormones'], recipeIds:[] },
+  { id:1, name:'Emily Yuan', credentials:'Co-Founder · Ex-Ogilvy', specialty:'Women\'s Health Nutrition', bio:'', initials:'EY', avatarColor:'#C4A882', followers:0, following:0, tags:['pcos','gut','hormones'], recipeIds:[] }, specialty:'Women\'s Health Nutrition', bio:'Co-founder of nuri. Building a recipe platform for women managing chronic conditions.', initials:'EY', avatarColor:'#C4A882', followers:0, following:0, tags:['pcos','gut','hormones'], recipeIds:[] },
   { id:2, name:'Malaika', credentials:'Co-founder', specialty:'Women\'s Health Nutrition', bio:'Co-founder of nuri. Building a recipe platform for women managing chronic conditions.', initials:'MR', avatarColor:'#8FA888', followers:0, following:0, tags:['pcos','hormones','endometriosis'], recipeIds:[] },
   { id:3, name:'Claire Pettitt', credentials:'PhD, RD', specialty:'PCOS & Women\'s Health', bio:'🇬🇧 PhD Registered Dietitian with 13 years of clinical experience across the NHS and private practice. Specialises in PCOS, endometriosis, fertility and gut health.', photo:null, initials:'CP', avatarColor:'#7A9E7E', followers:0, following:0, tags:['pcos','hormones','period','gut','fertility','endometriosis'], recipeIds:[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21] },
   { id:4, name:'Alysse Vocca', credentials:'RD', specialty:'Eating Disorders & Women\'s Health', bio:'Hi, I\'m Alysse — a Registered Dietitian specializing in women\'s health, eating disorders, and sustainable nutrition for chronic conditions, including PCOS. My approach focuses on helping women build a healthier relationship with food while supporting hormone balance, blood sugar stability, energy levels, and overall well-being without restriction or rigid dieting. I believe nutrition should feel realistic, nourishing, and supportive of your lifestyle. My specialties include PCOS nutrition, hormone health, and eating disorder recovery.', initials:'AV', avatarColor:'#C47A7A', followers:0, following:0, tags:['pcos','hormones','period','endometriosis'], recipeIds:[22,23,24,25,26,27,28,29,30,31] },
@@ -2586,7 +2586,7 @@ function AboutTab({ onApply, supaDietitians }) {
         <div className="about-section">
           <div className="about-section-eyebrow">who we are</div>
           <h2 className="about-section-title">Built by women, for women.</h2>
-          <p className="about-section-text">nuri. was co-founded by Emily and Malaika — two women who experienced first-hand how hard it is to find reliable, actionable nutrition guidance for chronic conditions.</p>
+          <p className="about-section-text">nuri. was co-founded by Emily and Malaika — who met at Brown and bonded over their chronic health conditions and has experienced first-hand how hard it is to find reliable, actionable nutrition guidance for chronic conditions.</p>
           <div className="about-team">
             {founderData.map(m => (
               <div key={m.name} className="about-team-card">
